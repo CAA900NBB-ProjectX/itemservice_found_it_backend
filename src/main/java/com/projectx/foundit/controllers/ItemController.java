@@ -1,14 +1,14 @@
 package com.projectx.foundit.controllers;
 
 import com.projectx.foundit.model.Item;
+import com.projectx.foundit.repository.ItemRepository;
 import com.projectx.foundit.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/item")
@@ -23,4 +23,19 @@ public class ItemController {
         return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
 
     }
+
+    @GetMapping("/getitems/{itemId}")
+    public ResponseEntity<Item> getItemById(@PathVariable int itemId) {
+        Optional<Item> item = itemService.getItemById(itemId);
+
+        if (item.isPresent()) {
+            return new ResponseEntity<>(item.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+
 }
