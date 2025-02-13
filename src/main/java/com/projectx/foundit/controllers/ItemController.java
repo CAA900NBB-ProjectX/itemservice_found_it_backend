@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 @RestController
@@ -19,8 +20,10 @@ public class ItemController {
 
     @PostMapping("/insertitems")
     public ResponseEntity<Item> insertItem(@RequestBody Item item) {
+        item.setCreatedAt(LocalTime.now());  // Set created_at before saving
+        item.setUpdatedAt(LocalTime.now());
         Item savedItem = itemService.insertItem(item);
-        return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedItem, HttpStatus.OK);
 
     }
 

@@ -5,6 +5,8 @@ import com.projectx.foundit.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ItemService {
 
@@ -13,6 +15,10 @@ public class ItemService {
 
     public Item insertItem(Item item){
         return (Item) itemRepository.save(item);
+    }
+
+    public Optional<Item> getItemById(long itemId) {
+        return itemRepository.findById(itemId);
     }
 
 }
