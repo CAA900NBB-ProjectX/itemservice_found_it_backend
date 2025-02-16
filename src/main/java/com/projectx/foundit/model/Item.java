@@ -1,6 +1,5 @@
 package com.projectx.foundit.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 
 @Entity
@@ -36,7 +38,7 @@ public class Item {
     private String locationFound;
 
     @Column(name = "date_time_found")
-    private LocalTime dateTimeFound;
+    private LocalDateTime dateTimeFound;
 
     @Column(name = "reported_by")
     private String reportedBy;
@@ -53,18 +55,29 @@ public class Item {
     @Column(name = "updated_at")
     private LocalTime updatedAt;
 
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    private List<ItemImage> images;
 
-    public Item(int item_id, String itemName, String description, Integer categoryId, String locationFound, Time dateTimeFound, String reportedBy, String contactInfo, String status, Time createdAt, Time updatedAt) {
+    @Column(name = "image_ids")
+    private List<Long> imageIdsList;
+
+
+    public Item(int item_id, String itemName, String description, Integer categoryId, String locationFound,
+                LocalDateTime dateTimeFound, String reportedBy, String contactInfo, String status, Time createdAt,
+                Time updatedAt, List<Long> imageIdsList) {
         this.item_id = item_id;
         this.itemName = itemName;
         this.description = description;
         this.categoryId = categoryId;
         this.locationFound = locationFound;
-        this.dateTimeFound = dateTimeFound.toLocalTime();
+        this.dateTimeFound = dateTimeFound;
         this.reportedBy = reportedBy;
         this.contactInfo = contactInfo;
         this.status = status;
         this.createdAt = LocalTime.now();
         this.updatedAt = LocalTime.now();
+        this.imageIdsList = imageIdsList;
+
     }
+
 }
