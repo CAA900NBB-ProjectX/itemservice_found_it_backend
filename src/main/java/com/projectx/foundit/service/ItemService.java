@@ -2,11 +2,14 @@ package com.projectx.foundit.service;
 
 import com.projectx.foundit.commons.ItemNotFoundException;
 import com.projectx.foundit.model.Item;
+import com.projectx.foundit.model.ItemImage;
+import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -15,11 +18,50 @@ public class ItemService {
     @Autowired
     private ItemRepository itemRepository;
 
-    public Item insertItem(Item item){
-        return (Item) itemRepository.save(item);
+    @Autowired
+    private ItemImageRepository itemImageRepository;
+
+    @Autowired
+    private ItemImageService itemImageService;
+
+    public Item insertItem(Item item) {
+//        Item savedItem = itemRepository.save(item);
+//        if (item.getImages()!= null) {
+//            for (ItemImage image: item.getImages()) {
+//                image.setImage(savedItem); ; // setItem(savedItem);
+//                itemImageService.saveItemImage(image);
+//            }
+//        }
+//        return savedItem;
+
+//        return (Item) itemRepository.save(item);
+
+
+        // First, save the images and get their IDs
+        if (item.getImages() != null) {
+            for (ItemImage image : item.getImages()) {
+                // Save the image to the image table
+                ItemImage savedImage = itemImageService.saveItemImage(image);
+                // Set the saved image's ID in the item's image list
+                item.setImageIdsList(Collections.singletonList(savedImage.getId()));
+                image.setId(savedImage.getId());// setItemImageId(savedImage.getItemImageId());
+            }
+        }
+        // Now, save the item with the image IDs as foreign keys
+        return itemRepository.save(item);
     }
 
     public Optional<Item> getItemById(long itemId) {
+        Optional<Item> item = itemRepository.findById(itemId);
+
+ /*       if(item != null) {
+            Optional<ItemImage> imageId = itemImageRepository.findById(Long.valueOf(item.get().getItem_id()));
+
+            for (int i = 0; i < item.get().getImageIdsList().size() ; i++) {
+                item.get().setImageIdsList(Collections.singletonList(imageId.get().getItemID().getImageIdsList().get(i)));
+            }
+
+        }*/
         return itemRepository.findById(itemId);
     }
 
@@ -66,7 +108,7 @@ public class ItemService {
         if (item.isPresent()) {
             itemRepository.delete(item.get());
         } else {
-            throw new ItemNotFoundException("Item with ID " + id + " not found"); // Example: Throwing an exception
+            throw new ItemNotFoundException("Item with ID " + id + " not found");
         }
     }
 

@@ -2,9 +2,13 @@ package com.projectx.foundit.controllers;
 
 import com.projectx.foundit.commons.ItemNotFoundException;
 import com.projectx.foundit.model.Item;
+import com.projectx.foundit.model.ItemImage;
+import com.projectx.foundit.repository.ItemImageRepository;
+import com.projectx.foundit.service.ItemImageService;
 import com.projectx.foundit.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,11 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private ItemImageService itemImageService;
+    @Autowired
+    private ItemImageRepository itemImageRepository;
+
     @PostMapping("/insertitems")
     public ResponseEntity<Item> insertItem(@RequestBody Item item) {
         item.setCreatedAt(LocalTime.now());
@@ -27,15 +36,21 @@ public class ItemController {
 
     }
 
-    @GetMapping("/getitems/{itemId}")
+    @GetMapping(value = "/getitems/{itemId}")
     public ResponseEntity<Item> getItemById(@PathVariable int itemId) {
         Optional<Item> item = itemService.getItemById(itemId);
 
         if (item.isPresent()) {
-            return new ResponseEntity<>(item.get(), HttpStatus.OK);
+            try {
+                return new ResponseEntity<>(item.get(), HttpStatus.OK);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        return null;
     }
 
     @PutMapping("updateitem/{id}")
@@ -59,7 +74,15 @@ public class ItemController {
         }
     }
 
+    public ResponseEntity<ItemImage> getImageByID(@PathVariable long imageID) {
+        Optional<ItemImage> itemimage = itemImageService.getImageById(imageID);
 
+        if (itemimage.isPresent()) {
+            return new ResponseEntity<>(itemimage.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 
 }

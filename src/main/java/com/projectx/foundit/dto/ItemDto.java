@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +17,7 @@ public class ItemDto {
     private Time date_time_found;
     private String reported_by;
     private String contact_info;
+    private List<Integer> image_ids;
     private String status;
     private Time created_at;
     private Time updated_at;
