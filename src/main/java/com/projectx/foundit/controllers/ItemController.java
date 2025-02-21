@@ -8,11 +8,12 @@ import com.projectx.foundit.service.ItemImageService;
 import com.projectx.foundit.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -82,6 +83,28 @@ public class ItemController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping(value = "/getitemsbyuser/{userId}")
+    public ResponseEntity<Object> getItemByUser(@PathVariable int userId) {
+        Optional<Item> item = itemService.getItemById(userId);
+
+        if (item.isPresent()) {
+            try {
+                // Fetch user details from another microservice
+                Object userDetails = itemService.fetchUserDetails(userId);
+
+                // Combine item data and user data
+                Map<String, Object> response = new HashMap<>();
+                response.put("item", item.get());
+                response.put("userDetails", userDetails);
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
 
