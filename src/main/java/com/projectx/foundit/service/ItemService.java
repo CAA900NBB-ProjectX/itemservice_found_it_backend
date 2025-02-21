@@ -1,10 +1,12 @@
 package com.projectx.foundit.service;
 
 import com.projectx.foundit.commons.ItemNotFoundException;
+import com.projectx.foundit.config.RabbitMQConfig;
 import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.repository.ItemRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,18 +26,10 @@ public class ItemService {
     @Autowired
     private ItemImageService itemImageService;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     public Item insertItem(Item item) {
-//        Item savedItem = itemRepository.save(item);
-//        if (item.getImages()!= null) {
-//            for (ItemImage image: item.getImages()) {
-//                image.setImage(savedItem); ; // setItem(savedItem);
-//                itemImageService.saveItemImage(image);
-//            }
-//        }
-//        return savedItem;
-
-//        return (Item) itemRepository.save(item);
-
 
         // First, save the images and get their IDs
         if (item.getImages() != null) {
@@ -110,6 +104,12 @@ public class ItemService {
         } else {
             throw new ItemNotFoundException("Item with ID " + id + " not found");
         }
+    }
+
+    public Object fetchUserDetails(int userId) {
+        // Send the user ID as a message and wait for the response
+        return rabbitTemplate.convertSendAndReceive(
+                RabbitMQConfig.REQUEST_QUEUE, userId);
     }
 
 
