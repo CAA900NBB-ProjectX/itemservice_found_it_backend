@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/item")
+@CrossOrigin(origins = "*")
 public class ItemController {
 
     @Autowired
@@ -27,6 +28,7 @@ public class ItemController {
     @Autowired
     private ItemImageRepository itemImageRepository;
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/insertitems")
     public ResponseEntity<Item> insertItem(@RequestBody Item item) {
         item.setCreatedAt(LocalTime.now());
@@ -36,6 +38,7 @@ public class ItemController {
 
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping(value = "/getitems/{itemId}")
     public ResponseEntity<Item> getItemById(@PathVariable int itemId) {
         Optional<Item> item = itemService.getItemById(itemId);
@@ -53,6 +56,7 @@ public class ItemController {
         return null;
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping("updateitem/{id}")
     public ResponseEntity<?> updateItem(@PathVariable int id, @RequestBody Item updatedItem) {
         Item item = itemService.updateItem(id, updatedItem);
@@ -64,6 +68,7 @@ public class ItemController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @DeleteMapping("deleteitem/{id}")
     public ResponseEntity<?> deleteItem(@PathVariable int id) {
         try {
