@@ -1,6 +1,7 @@
 package com.projectx.foundit.controllers;
 
 import com.projectx.foundit.commons.ItemNotFoundException;
+import com.projectx.foundit.dto.VerifyUserDto;
 import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.repository.ItemImageRepository;
@@ -91,13 +92,20 @@ public class ItemController {
 
         if (item.isPresent()) {
             try {
-                // Fetch user details from another microservice
-                Object userDetails = itemService.fetchUserDetails(userId);
+//                TODO: User Details endpoint
+//                Object userDetails = itemService.fetchUserDetails(userId);
+              if(false){
+                    VerifyUserDto dto = new VerifyUserDto("username", "otpCode");
+                    String result = ItemHelper.verifyUser(dto);
+                    System.out.println(result);
+                }
 
-                // Combine item data and user data
+
                 Map<String, Object> response = new HashMap<>();
                 response.put("item", item.get());
-                response.put("userDetails", userDetails);
+                response.put("userDetails", "userDetails");
+
+
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
@@ -106,6 +114,5 @@ public class ItemController {
         }
         return null;
     }
-
 
 }
