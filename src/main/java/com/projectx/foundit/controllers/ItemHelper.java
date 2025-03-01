@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
 
-@Service
 public class ItemHelper {
 
     @Value("${api.base.url}")
