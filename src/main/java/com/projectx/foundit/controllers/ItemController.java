@@ -55,6 +55,24 @@ public class ItemController {
         return null;
     }
 
+    @GetMapping(value = "/getitemimages/{imageId}")
+    public ResponseEntity<Item> getImageById(@PathVariable int imageId) {
+        Optional<ItemImage> itemImage = itemImageService.getImageById(imageId);
+
+        if (itemImage.isPresent()) {
+            try {
+                return new ResponseEntity<>(itemImage.get().getItemID(), HttpStatus.OK);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return null;
+    }
+
+
     @PutMapping("updateitem/{id}")
     public ResponseEntity<?> updateItem(@PathVariable int id, @RequestBody Item updatedItem) {
         Item item = itemService.updateItem(id, updatedItem);
