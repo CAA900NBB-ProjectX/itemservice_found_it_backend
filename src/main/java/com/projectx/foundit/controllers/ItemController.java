@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,8 +27,11 @@ public class ItemController {
 
     @Autowired
     private ItemImageService itemImageService;
+
     @Autowired
     private ItemImageRepository itemImageRepository;
+
+    private ItemHelper itemHelper = new ItemHelper();
 
     @PostMapping("/insertitems")
     public ResponseEntity<Item> insertItem(@RequestBody Item item) {
@@ -112,7 +116,7 @@ public class ItemController {
             try {
 //                TODO: User Details endpoint
 //                Object userDetails = itemService.fetchUserDetails(userId);
-              if(false){
+                if (false) {
                     VerifyUserDto dto = new VerifyUserDto("username", "otpCode");
                     String result = ItemHelper.verifyUser(dto);
                     System.out.println(result);
@@ -124,13 +128,22 @@ public class ItemController {
                 response.put("userDetails", "userDetails");
 
 
-
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return null;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Item>> searchItems(
+            @RequestParam(value = "itemName", required = false) String itemName,
+            @RequestParam(value = "locationFound", required = false) String locationFound,
+            @RequestParam(value = "description", required = false) String description) {
+
+        List<Item> items = itemHelper.searchItems(itemName, locationFound, description);
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
 }

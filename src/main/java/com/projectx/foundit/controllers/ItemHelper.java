@@ -1,14 +1,27 @@
 package com.projectx.foundit.controllers;
 
 import com.projectx.foundit.dto.VerifyUserDto;
+import com.projectx.foundit.model.Item;
+import com.projectx.foundit.repository.ItemRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
 public class ItemHelper {
 
     @Value("${api.base.url}")
@@ -19,21 +32,14 @@ public class ItemHelper {
 
     private final RestTemplate restTemplate;
 
-    public ItemHelper(String baseUrl, String port, RestTemplate restTemplate) {
-        this.baseUrl = baseUrl;
-        this.port = port;
-        this.restTemplate = restTemplate;
-    }
+    @Autowired
+    private ItemRepository itemRepository;
 
-    public String callEndpoint() {
-        String url = baseUrl + ":" + port + "/auth/verify";
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            return response.getBody();
-        } catch (Exception e) {
-            System.out.println("Failed to call endpoint: " + e.getMessage());
-            return null;
-        }
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public ItemHelper() {
+        restTemplate = null;
     }
 
     public static String verifyUser(VerifyUserDto verifyUserDto) {
@@ -53,5 +59,37 @@ public class ItemHelper {
             return "Error: " + e.getMessage();
         }
     }
+
+    public String callEndpoint() {
+        String url = baseUrl + ":" + port + "/auth/verify";
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.out.println("Failed to call endpoint: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Item> searchItems(String itemName, String locationFound, String description) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Item> query = cb.createQuery(Item.class);
+        Root<Item> item = query.from(Item.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (itemName != null) {
+            predicates.add(cb.like(item.get("itemName"), "%" + itemName + "%"));
+        }
+        if (locationFound != null) {
+            predicates.add(cb.like(item.get("locationFound"), "%" + locationFound + "%"));
+        }
+        if (description != null) {
+            predicates.add(cb.like(item.get("description"), "%" + description + "%"));
+        }
+
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
+        return entityManager.createQuery(query).getResultList();
+    }
+
 }
 
