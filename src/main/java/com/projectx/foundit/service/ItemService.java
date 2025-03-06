@@ -1,7 +1,6 @@
 package com.projectx.foundit.service;
 
 import com.projectx.foundit.commons.ItemNotFoundException;
-import com.projectx.foundit.config.RabbitMQConfig;
 import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.repository.ItemImageRepository;
@@ -104,12 +103,6 @@ public class ItemService {
         } else {
             throw new ItemNotFoundException("Item with ID " + id + " not found");
         }
-    }
-
-    public Object fetchUserDetails(int userId) {
-        // Send the user ID as a message and wait for the response
-        return rabbitTemplate.convertSendAndReceive(
-                RabbitMQConfig.REQUEST_QUEUE, userId);
     }
 
 

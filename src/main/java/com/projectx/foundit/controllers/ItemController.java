@@ -1,6 +1,7 @@
 package com.projectx.foundit.controllers;
 
 import com.projectx.foundit.commons.ItemNotFoundException;
+import com.projectx.foundit.dto.VerifyUserDto;
 import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.repository.ItemImageRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,8 +27,11 @@ public class ItemController {
 
     @Autowired
     private ItemImageService itemImageService;
+
     @Autowired
     private ItemImageRepository itemImageRepository;
+
+    private ItemHelper itemHelper = new ItemHelper();
 
     @PostMapping("/insertitems")
     public ResponseEntity<Item> insertItem(@RequestBody Item item) {
@@ -53,6 +58,24 @@ public class ItemController {
 
         return null;
     }
+
+    @GetMapping(value = "/getitemimages/{imageId}")
+    public ResponseEntity<Item> getImageById(@PathVariable int imageId) {
+        Optional<ItemImage> itemImage = itemImageService.getImageById(imageId);
+
+        if (itemImage.isPresent()) {
+            try {
+                return new ResponseEntity<>(itemImage.get().getItemID(), HttpStatus.OK);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return null;
+    }
+
 
     @PutMapping("updateitem/{id}")
     public ResponseEntity<?> updateItem(@PathVariable int id, @RequestBody Item updatedItem) {
@@ -91,13 +114,19 @@ public class ItemController {
 
         if (item.isPresent()) {
             try {
-                // Fetch user details from another microservice
-                Object userDetails = itemService.fetchUserDetails(userId);
+//                TODO: User Details endpoint
+//                Object userDetails = itemService.fetchUserDetails(userId);
+                if (false) {
+                    VerifyUserDto dto = new VerifyUserDto("username", "otpCode");
+                    String result = ItemHelper.verifyUser(dto);
+                    System.out.println(result);
+                }
 
-                // Combine item data and user data
+
                 Map<String, Object> response = new HashMap<>();
                 response.put("item", item.get());
-                response.put("userDetails", userDetails);
+                response.put("userDetails", "userDetails");
+
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
@@ -107,5 +136,14 @@ public class ItemController {
         return null;
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Item>> searchItems(
+            @RequestParam(value = "itemName", required = false) String itemName,
+            @RequestParam(value = "locationFound", required = false) String locationFound,
+            @RequestParam(value = "description", required = false) String description) {
+
+        List<Item> items = itemHelper.searchItems(itemName, locationFound, description);
+        return new ResponseEntity<>(items, HttpStatus.OK);
+    }
 
 }
