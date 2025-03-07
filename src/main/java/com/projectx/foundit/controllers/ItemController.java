@@ -4,6 +4,7 @@ import com.projectx.foundit.commons.ItemNotFoundException;
 import com.projectx.foundit.dto.VerifyUserDto;
 import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
+import com.projectx.foundit.model.Token;
 import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.service.ItemImageService;
 import com.projectx.foundit.service.ItemService;
@@ -144,6 +145,13 @@ public class ItemController {
 
         List<Item> items = itemHelper.searchItems(itemName, locationFound, description);
         return new ResponseEntity<>(items, HttpStatus.OK);
+    }
+
+    @GetMapping("/getToken")
+    public ResponseEntity<Token> getToken(@PathVariable int userId,@PathVariable String token){
+
+        //TODO: get and validation segment
+        return null;
     }
 
 }
