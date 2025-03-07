@@ -13,6 +13,12 @@ java {
 	}
 }
 
+bootJar {
+	archiveBaseName.set("item-service")   // Custom base name
+	archiveVersion.set("1.0.0")    // Custom version (optional)
+	archiveFileName.set("item-service.jar")  // Full custom name
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -35,7 +41,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 tasks.named('test') {
