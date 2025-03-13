@@ -7,10 +7,12 @@ import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.repository.ItemRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -45,7 +47,8 @@ public class ItemService {
     }
 
     public Optional<Item> getItemById(long itemId) {
-        Optional<Item> item = itemRepository.findById(itemId);
+        try {
+            Optional<Item> item = itemRepository.findById(itemId);
 
  /*       if(item != null) {
             Optional<ItemImage> imageId = itemImageRepository.findById(Long.valueOf(item.get().getItem_id()));
@@ -55,55 +58,75 @@ public class ItemService {
             }
 
         }*/
-        return itemRepository.findById(itemId);
+            return itemRepository.findById(itemId);
+        } catch (Exception e) {
+            System.err.println("An error occurred while fetching the item: " + e.getMessage());
+            return Optional.empty(); // Return an empty optional on failure
+        }
     }
 
     public Item updateItem(long id, Item updatedItem) {
-        Optional<Item> existingItem = itemRepository.findById(id);
 
-        if (existingItem.isPresent()) {
-            Item item = existingItem.get();
+        try {
+            Optional<Item> existingItem = itemRepository.findById(id);
 
-            if (updatedItem.getItemName() != null) {
-                item.setItemName(updatedItem.getItemName());
-            }
-            if (updatedItem.getDescription() != null) {
-                item.setDescription(updatedItem.getDescription());
-            }
-            if (updatedItem.getCategoryId() != null) {
-                item.setCategoryId(updatedItem.getCategoryId());
-            }
-            if (updatedItem.getLocationFound() != null) {
-                item.setLocationFound(updatedItem.getLocationFound());
-            }
-            if (updatedItem.getDateTimeFound() != null) {
-                item.setDateTimeFound(updatedItem.getDateTimeFound());
-            }
-            if (updatedItem.getReportedBy() != null) {
-                item.setReportedBy(updatedItem.getReportedBy());
-            }
-            if (updatedItem.getContactInfo() != null) {
-                item.setContactInfo(updatedItem.getContactInfo());
-            }
-            if (updatedItem.getStatus() != null) {
-                item.setStatus(updatedItem.getStatus());
-            }
+            if (existingItem.isPresent()) {
+                Item item = existingItem.get();
 
-            item.setUpdatedAt(LocalTime.now());
-            return itemRepository.save(item);
-        } else {
-            return null;
+                if (updatedItem.getItemName() != null) {
+                    item.setItemName(updatedItem.getItemName());
+                }
+                if (updatedItem.getDescription() != null) {
+                    item.setDescription(updatedItem.getDescription());
+                }
+                if (updatedItem.getCategoryId() != null) {
+                    item.setCategoryId(updatedItem.getCategoryId());
+                }
+                if (updatedItem.getLocationFound() != null) {
+                    item.setLocationFound(updatedItem.getLocationFound());
+                }
+                if (updatedItem.getDateTimeFound() != null) {
+                    item.setDateTimeFound(updatedItem.getDateTimeFound());
+                }
+                if (updatedItem.getReportedBy() != null) {
+                    item.setReportedBy(updatedItem.getReportedBy());
+                }
+                if (updatedItem.getContactInfo() != null) {
+                    item.setContactInfo(updatedItem.getContactInfo());
+                }
+                if (updatedItem.getStatus() != null) {
+                    item.setStatus(updatedItem.getStatus());
+                }
+
+                item.setUpdatedAt(LocalTime.now());
+                return itemRepository.save(item);
+            } else {
+                return null;
+            }
+        } catch (NoSuchElementException e) {
+            System.err.println("Error: " + e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            System.err.println("Data integrity issue: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
         }
+
+        return null;
     }
 
     public void deleteItem(long id) {
-        Optional<Item> item = itemRepository.findById(id);
-        if (item.isPresent()) {
-            itemRepository.delete(item.get());
-        } else {
-            throw new ItemNotFoundException("Item with ID " + id + " not found");
+        try {
+            Optional<Item> item = itemRepository.findById(id);
+            if (item.isPresent()) {
+                itemRepository.delete(item.get());
+            } else {
+                throw new ItemNotFoundException("Item with ID " + id + " not found");
+            }
+        } catch (DataIntegrityViolationException e) {
+            System.err.println("Failed to delete item due to data integrity constraints: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred while deleting the item: " + e.getMessage());
         }
     }
-
 
 }
