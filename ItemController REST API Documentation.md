@@ -17,9 +17,23 @@ Inserts a new item into the system.
 **Request Body:**
 ```json
 {
-  "name": "string",
-  "description": "string",
-  "location": "string"
+  "itemName": "Backpack",
+  "description": "Brown backpack with laptop and books",
+  "categoryId": 1,
+  "locationFound": "Mall",
+  "dateTimeFound": "2025-02-15T10:00:00",
+  "reportedBy": "Johnson Johnson",
+  "contactInfo": "Johnson.johnson@email.com",
+  "status": "LOST",
+  "images": [
+    {
+      "description": "Image of the lost brown backpack",
+      "image": "data:image/jpeg;base64",
+      "locationFound": "Mall",
+      "dateTime": "10:00:00",
+      "status": "LOST"
+    }
+  ]
 }
 ```
 
