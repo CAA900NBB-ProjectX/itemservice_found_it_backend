@@ -162,3 +162,6 @@ Placeholder endpoint for retrieving and validating a user token. Currently not i
 - Complete user details retrieval in `getitemsbyuser`.
 - Improve exception handling for better error reporting.
 
+## Diagram View
+![item service diagram](https://github.com/user-attachments/assets/ed541d84-562d-4ef2-b631-a94c55ea3c4e)
+
