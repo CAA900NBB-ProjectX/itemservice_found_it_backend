@@ -5,7 +5,6 @@ import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.repository.ItemRepository;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +23,6 @@ public class ItemService {
 
     @Autowired
     private ItemImageService itemImageService;
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
 
     public Item insertItem(Item item) {
 
