@@ -143,7 +143,7 @@ public class ItemController {
             @RequestParam(value = "locationFound", required = false) String locationFound,
             @RequestParam(value = "description", required = false) String description) {
 
-        List<Item> items = itemHelper.searchItems(itemName, locationFound, description);
+        List<Item> items = itemService.searchItems2(itemName, locationFound, description);
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
 

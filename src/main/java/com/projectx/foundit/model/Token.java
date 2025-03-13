@@ -8,7 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class Token {
-    private Integer userId;
+    private int userId;
     private String token;
     private Date timestamp;
 
