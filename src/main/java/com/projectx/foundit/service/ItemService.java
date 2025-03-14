@@ -54,6 +54,10 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
+    public List<Item> getallItems() {
+            return itemRepository.findAll();
+    }
+
     public Optional<Item> getItemById(long itemId) {
         try {
             Optional<Item> item = itemRepository.findById(itemId);
