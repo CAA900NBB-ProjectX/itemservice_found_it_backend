@@ -40,6 +40,7 @@ public class ItemService {
     @PersistenceContext
     private EntityManager entityManager;
 
+
     public Item insertItem(Item item) {
 
         // First, save the images and get their IDs
