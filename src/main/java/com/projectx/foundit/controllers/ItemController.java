@@ -5,6 +5,7 @@ import com.projectx.foundit.dto.VerifyUserDto;
 import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.model.Token;
+import com.projectx.foundit.model.User;
 import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.service.ItemImageService;
 import com.projectx.foundit.service.ItemService;
@@ -40,6 +41,16 @@ public class ItemController {
         item.setUpdatedAt(LocalTime.now());
         Item savedItem = itemService.insertItem(item);
         return new ResponseEntity<>(savedItem, HttpStatus.OK);
+
+    }
+    @GetMapping(value = "/getallitems")
+    public ResponseEntity<?> getallItems() {
+        try {
+            List<Item> users = itemService.getallItems();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
     }
 
