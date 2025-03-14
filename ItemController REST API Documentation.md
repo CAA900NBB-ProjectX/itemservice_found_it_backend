@@ -143,6 +143,10 @@ Searches for items based on optional parameters.
 - `locationFound` (string, optional): Location where the item was found.
 - `description` (string, optional): Description of the item.
 
+
+**Sample**
+`http://localhost:8082/item/search?itemName=wallet`
+
 **Response:**
 - `200 OK`: Returns a list of items matching the search criteria.
 
