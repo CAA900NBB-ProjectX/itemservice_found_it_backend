@@ -13,7 +13,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -34,8 +33,6 @@ public class ItemService {
     @Autowired
     private ItemImageService itemImageService;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
