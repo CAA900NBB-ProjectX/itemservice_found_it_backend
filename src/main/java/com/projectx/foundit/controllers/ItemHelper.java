@@ -72,38 +72,38 @@ public class ItemHelper {
         }
     }
 
-    public List<Item> searchItems(String itemName, String locationFound, String description) {
-        List<Item> results = new ArrayList<>();
-
-        try {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Item> query = cb.createQuery(Item.class);
-            Root<Item> item = query.from(Item.class);
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (itemName != null && !itemName.trim().isEmpty()) {
-                predicates.add(cb.like(item.get("itemName"), "%" + itemName + "%"));
-            }
-            if (locationFound != null && !locationFound.trim().isEmpty()) {
-                predicates.add(cb.like(item.get("locationFound"), "%" + locationFound + "%"));
-            }
-            if (description != null && !description.trim().isEmpty()) {
-                predicates.add(cb.like(item.get("description"), "%" + description + "%"));
-            }
-
-            query.where(cb.and(predicates.toArray(new Predicate[0])));
-            results = entityManager.createQuery(query).getResultList();
-
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid argument provided: " + e.getMessage());
-        } catch (PersistenceException e) {
-            System.err.println("Database error occurred: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("An unexpected error occurred: " + e.getMessage());
-        }
-
-        return results;
-    }
+//    public List<Item> searchItems(String itemName, String locationFound, String description) {
+//        List<Item> results = new ArrayList<>();
+//
+//        try {
+//            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+//            CriteriaQuery<Item> query = cb.createQuery(Item.class);
+//            Root<Item> item = query.from(Item.class);
+//            List<Predicate> predicates = new ArrayList<>();
+//
+//            if (itemName != null && !itemName.trim().isEmpty()) {
+//                predicates.add(cb.like(item.get("itemName"), "%" + itemName + "%"));
+//            }
+//            if (locationFound != null && !locationFound.trim().isEmpty()) {
+//                predicates.add(cb.like(item.get("locationFound"), "%" + locationFound + "%"));
+//            }
+//            if (description != null && !description.trim().isEmpty()) {
+//                predicates.add(cb.like(item.get("description"), "%" + description + "%"));
+//            }
+//
+//            query.where(cb.and(predicates.toArray(new Predicate[0])));
+//            results = entityManager.createQuery(query).getResultList();
+//
+//        } catch (IllegalArgumentException e) {
+//            System.err.println("Invalid argument provided: " + e.getMessage());
+//        } catch (PersistenceException e) {
+//            System.err.println("Database error occurred: " + e.getMessage());
+//        } catch (Exception e) {
+//            System.err.println("An unexpected error occurred: " + e.getMessage());
+//        }
+//
+//        return results;
+//    }
 
 }
 

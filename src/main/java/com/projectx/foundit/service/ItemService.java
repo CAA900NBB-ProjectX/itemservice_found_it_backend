@@ -5,14 +5,22 @@ import com.projectx.foundit.model.Item;
 import com.projectx.foundit.model.ItemImage;
 import com.projectx.foundit.repository.ItemImageRepository;
 import com.projectx.foundit.repository.ItemRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ItemService {
@@ -25,6 +33,13 @@ public class ItemService {
 
     @Autowired
     private ItemImageService itemImageService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     public Item insertItem(Item item) {
 
@@ -124,5 +139,100 @@ public class ItemService {
             System.err.println("An unexpected error occurred while deleting the item: " + e.getMessage());
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<Item> searchItems(String itemName, String locationFound, String description) {
+        List<Item> results = new ArrayList<>();
+
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Item> query = cb.createQuery(Item.class);
+            Root<Item> item = query.from(Item.class);
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (itemName != null && !itemName.trim().isEmpty()) {
+                predicates.add(cb.like(cb.lower(item.get("itemName")), "%" + itemName.toLowerCase() + "%"));
+            }
+            if (locationFound != null && !locationFound.trim().isEmpty()) {
+                predicates.add(cb.like(item.get("locationFound"), "%" + locationFound + "%"));
+            }
+            if (description != null && !description.trim().isEmpty()) {
+                predicates.add(cb.like(item.get("description"), "%" + description + "%"));
+            }
+
+            System.out.println("Query results: " + results.size() + " items found");
+            for (Item i : results) {
+                System.out.println("Item: " + i.getItemName());
+            }
+
+            query.where(cb.and(predicates.toArray(new Predicate[0])));
+            results = entityManager.createQuery(query).getResultList();
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid argument provided: " + e.getMessage());
+        } catch (PersistenceException e) {
+            System.err.println("Database error occurred: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+        }
+
+        return results;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Item> searchItems2(String itemName, String locationFound, String description) {
+        // Log the search request
+        System.out.println("Searching for items with criteria - Name: " + itemName
+                + ", Location: " + locationFound
+                + ", Description: " + description);
+
+        try {
+            // Create a native SQL query for maximum compatibility with PostgreSQL
+            StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM lostitems WHERE 1=1");
+            Map<String, Object> parameters = new HashMap<>();
+
+            // Add search conditions if parameters are provided
+            if (itemName != null && !itemName.trim().isEmpty()) {
+                sqlBuilder.append(" AND LOWER(item_name) LIKE LOWER(:itemName)");
+                parameters.put("itemName", "%" + itemName.trim() + "%");
+            }
+
+            if (locationFound != null && !locationFound.trim().isEmpty()) {
+                sqlBuilder.append(" AND LOWER(location_found) LIKE LOWER(:locationFound)");
+                parameters.put("locationFound", "%" + locationFound.trim() + "%");
+            }
+
+            if (description != null && !description.trim().isEmpty()) {
+                sqlBuilder.append(" AND LOWER(description) LIKE LOWER(:description)");
+                parameters.put("description", "%" + description.trim() + "%");
+            }
+
+            // Create the native query
+            Query query = entityManager.createNativeQuery(sqlBuilder.toString(), Item.class);
+
+            // Set parameters
+            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            // Execute query and get results
+            @SuppressWarnings("unchecked")
+            List<Item> results = query.getResultList();
+
+            // Log results
+            System.out.println("Search found " + results.size() + " items");
+            for (Item item : results) {
+                System.out.println("Found: ID=" + item.getItem_id() + ", Name=" + item.getItemName());
+            }
+
+            return results;
+
+        } catch (Exception e) {
+            System.err.println("Error searching for items: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
 
 }
