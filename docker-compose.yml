@@ -1,5 +1,6 @@
 services:
   itemservice:
+    container_name: itemservice
     build :
       context: .
       dockerfile: Dockerfile
