@@ -1,9 +1,7 @@
 services:
   itemservice:
     container_name: itemservice
-    build :
-      context: .
-      dockerfile: Dockerfile
+    image: tharukadk/item-service:01
     env_file:
       - .env
     environment:
