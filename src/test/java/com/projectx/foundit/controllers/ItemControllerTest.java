@@ -103,12 +103,13 @@ public class ItemControllerTest {
         updatedItem.setItemName("Updated Item");
         updatedItem.setDescription("Updated Description");
 
-        when(itemService.updateItem(eq(1), any(Item.class))).thenReturn(updatedItem);
+        // Use eq() matcher for the first argument (id)
+        when(itemService.updateItem(eq(1L), any(Item.class))).thenReturn(updatedItem);
 
         ResponseEntity<?> response = itemController.updateItem(1, updatedItem);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Updated Item", ((Item) response.getBody()).getItemName());
-        verify(itemService).updateItem(eq(1), any(Item.class));
+        verify(itemService).updateItem(eq(1L), any(Item.class));
     }
 }
