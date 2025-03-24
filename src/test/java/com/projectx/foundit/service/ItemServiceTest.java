@@ -77,7 +77,8 @@ public class ItemServiceTest {
         Optional<Item> result = itemService.getItemById(1);
 
         assertTrue(result.isPresent());
-        assertEquals("Test Item", result.get().getItemName());
+        var item = result.get().getItemName();
+        assertEquals("Test Item", item);
         verify(itemRepository).findById(1L);
     }
 

@@ -60,7 +60,7 @@ public class ItemService {
 
     public Optional<Item> getItemById(long itemId) {
         try {
-            Optional<Item> item = itemRepository.findById(itemId);
+           // Optional<Item> item = itemRepository.findById(itemId);
 
  /*       if(item != null) {
             Optional<ItemImage> imageId = itemImageRepository.findById(Long.valueOf(item.get().getItem_id()));
