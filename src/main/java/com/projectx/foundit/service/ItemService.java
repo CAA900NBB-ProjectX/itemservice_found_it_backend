@@ -134,6 +134,9 @@ public class ItemService {
             } else {
                 throw new ItemNotFoundException("Item with ID " + id + " not found");
             }
+        } catch (ItemNotFoundException e) {
+            // Re-throw the ItemNotFoundException so it can be caught by the test
+            throw e;
         } catch (DataIntegrityViolationException e) {
             System.err.println("Failed to delete item due to data integrity constraints: " + e.getMessage());
         } catch (Exception e) {
